@@ -1,14 +1,17 @@
-<script>
+<script lang="ts">
 	import { Folders } from '$lib/Stores/FolderStore';
-
+	type Folder = {
+		id: number;
+		name: string;
+	};
 	export let open = false;
 	export let showBackdrop = true;
 	export let onClosed;
-	export let folderId;
-	let folderName;
+	export let folderId: number;
+	let folderName: string;
 	folderName = '';
 	let disabled = false;
-	let folder;
+	let folder: Folder;
 	let checkValue = (e) => {
 		if (e.target.value.length > 2) {
 			disabled = false;
@@ -26,7 +29,7 @@
 			folder = folders[index];
 		});
 	}
-	let updateFolder = (id) => {
+	let updateFolder = (id: number) => {
 		Folders.update((folders) => {
 			const index = folders.findIndex((obj) => {
 				return obj.id === id;

@@ -1,10 +1,14 @@
-<script>
+<script lang="ts">
 	import { Folders } from '$lib/Stores/FolderStore.ts';
 	import Modal from '$lib/components/modal/Modal.svelte';
-	let foldersArr = [];
-	let folderName = '';
-	let disabled = true;
-	Folders.subscribe((folders) => {
+	type Folder = {
+		id: Number;
+		name: string;
+	};
+	let foldersArr: Folder[] = [];
+	let folderName: string = '';
+	let disabled: boolean = true;
+	Folders.subscribe((folders: Folder[]) => {
 		foldersArr = folders;
 	});
 	let checkValue = (e) => {
@@ -16,21 +20,21 @@
 		}
 	};
 	let addFolder = () => {
-		Folders.subscribe((folders) => {
+		Folders.subscribe((folders: Folder[]) => {
 			folders.push({ id: folders.length + 1, name: folderName });
 			foldersArr = folders;
 			folderName = '';
 		});
 	};
-	let delteFolder = (folderId) => {
-		Folders.update((folders) => {
-			return folders.filter((folder) => folder.id !== folderId);
+	let delteFolder = (folderId: number) => {
+		Folders.update((folders: Folder[]) => {
+			return (foldersArr = folders.filter((folder) => folder.id !== folderId));
 		});
 	};
 
-	let showPopup = false;
-	let folderId;
-	const onShowPopup = (id) => {
+	let showPopup: boolean = false;
+	let folderId: number;
+	const onShowPopup = (id: number) => {
 		showPopup = true;
 		folderId = id;
 	};
@@ -73,7 +77,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="col-md-4">
+		<div class="col-md-8">
 			<div class="todos">
 				<slot />
 			</div>
