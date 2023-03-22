@@ -1,6 +1,7 @@
 <script>
 	import { Folders } from '$lib/Stores/FolderStore.ts';
-	let foldersArr;
+	import Modal from '$lib/components/modal/Modal.svelte';
+	let foldersArr = [];
 	let folderName = '';
 	let disabled = true;
 	Folders.subscribe((folders) => {
@@ -10,10 +11,11 @@
 		if (e.target.value.length > 2) {
 			disabled = false;
 			folderName = e.target.value;
+		} else {
+			disabled = true;
 		}
 	};
 	let addFolder = () => {
-		console.log(folderName);
 		Folders.subscribe((folders) => {
 			folders.push({ id: folders.length + 1, name: folderName });
 			foldersArr = folders;
@@ -21,10 +23,20 @@
 		});
 	};
 	let delteFolder = (folderId) => {
-		const deltedFolder = foldersArr.filter((object) => {
-			return object.id !== folderId;
+		Folders.update((folders) => {
+			return folders.filter((folder) => folder.id !== folderId);
 		});
-		foldersArr = deltedFolder;
+	};
+
+	let showPopup = false;
+	let folderId;
+	const onShowPopup = (id) => {
+		showPopup = true;
+		folderId = id;
+	};
+
+	const onPopupClose = () => {
+		showPopup = false;
 	};
 </script>
 
@@ -40,12 +52,24 @@
 					</div>
 				</div>
 				<div class="list-group">
-					{#each foldersArr as folder}
-						<a href="/folder/{folder.id}" class="list-group-item list-group-item-action">
-							{folder.name}
-						</a>
-						<button class="btn btn-danger" on:click={delteFolder(folder.id)}>Delete</button>
-					{/each}
+					{#if foldersArr}
+						{#each foldersArr as folder}
+							<div class="list-group-item d-flex align-items-center justify-content-between">
+								<a href="/folder/{folder.id}" class="list-group-item-action text-decoration-none">
+									{folder.name}
+								</a>
+								<div class="buttons d-flex">
+									<button class="btn btn-danger me-2" on:click={() => delteFolder(folder.id)}
+										>Delete</button
+									>
+									<button class="btn btn-secondary" on:click={() => onShowPopup(folder.id)}
+										>Edit</button
+									>
+								</div>
+							</div>
+						{/each}
+					{/if}
+					<Modal {folderId} open={showPopup} onClosed={() => onPopupClose()} />
 				</div>
 			</div>
 		</div>
