@@ -79,7 +79,6 @@
 		folderId = parseInt(pageData.params.folderid);
 	});
 	Todos.subscribe((todos) => {
-		console.log(todos);
 		return (todosArr = todos.filter((todo) => todo.folderId == folderId));
 	});
 	const modalClose = () => {
