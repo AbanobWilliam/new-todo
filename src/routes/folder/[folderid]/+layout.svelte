@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import Modal from '$lib/components/modal/Todo/Modal.svelte';
 	import { Todos } from '$lib/Stores/TodoStore';
 	let folderId: number;
 	type Todo = {
@@ -14,6 +15,16 @@
 	let todoDesc: string = '';
 	let disabled: boolean = true;
 	let TodoCompleted: boolean = false;
+
+	page.subscribe((pageData) => {
+		folderId = parseInt(pageData.params.folderid);
+	});
+	$: {
+		Todos.subscribe((todos) => {
+			console.log(todos);
+			return (todosArr = todos.filter((todo) => todo.folderId == folderId));
+		});
+	}
 	let checkNameValue = (e) => {
 		todoName = e.target.value;
 		if (todoName.length > 3 && todoDesc.length > 5) {
@@ -31,6 +42,7 @@
 		}
 	};
 	let completed = () => {
+		console.log(TodoCompleted);
 		TodoCompleted;
 	};
 	let addTodo = (folderId: number) => {
@@ -47,21 +59,23 @@
 			});
 		});
 	};
-	let delteTodo = (todoId: number) => {
+	let deleteTodo = (todoId: number) => {
 		Todos.update((todos) => {
 			return (todosArr = todos.filter((todo) => {
 				return todo.id !== todoId;
 			}));
 		});
 	};
-	page.subscribe((pageData) => {
-		folderId = parseInt(pageData.params.folderid);
-	});
-	$: {
-		Todos.subscribe((todos) => {
-			return (todosArr = todos.filter((todo) => todo.folderId == folderId));
-		});
-	}
+	let showPopup: boolean = false;
+	let todoId: number;
+	const onShowPopup = (id: number) => {
+		showPopup = true;
+		todoId = id;
+	};
+
+	const onPopupClose = () => {
+		showPopup = false;
+	};
 </script>
 
 <div class="row">
@@ -100,17 +114,16 @@
 								{todo.name}
 							</a>
 							<div class="buttons d-flex">
-								<button class="btn btn-danger me-2" on:click={() => delteTodo(todo.id)}
+								<button class="btn btn-danger me-2" on:click={() => deleteTodo(todo.id)}
 									>Delete</button
 								>
-								<!--<button class="btn btn-secondary" on:click={() => onShowPopup(todo.id)}
-                                    >Edit</button
-                                >-->
+								<button class="btn btn-secondary" on:click={() => onShowPopup(todo.id)}>Edit</button
+								>
 							</div>
 						</div>
 					{/each}
 				{/if}
-				<!--<Modal {folderId} open={showPopup} onClosed={() => onPopupClose()} />-->
+				<Modal {todoId} open={showPopup} onClosed={() => onPopupClose()} />
 			</div>
 		</div>
 	</div>

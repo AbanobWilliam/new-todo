@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Folders } from '$lib/Stores/FolderStore.ts';
-	import Modal from '$lib/components/modal/Modal.svelte';
+	import Modal from '$lib/components/modal/Folder/Modal.svelte';
 	type Folder = {
 		id: Number;
 		name: string;
@@ -20,11 +20,11 @@
 		}
 	};
 	let addFolder = () => {
-		Folders.subscribe((folders: Folder[]) => {
+		Folders.update((folders: Folder[]) => {
 			folders.push({ id: folders.length + 1, name: folderName });
-			foldersArr = folders;
-			folderName = '';
+			return (foldersArr = folders);
 		});
+		folderName = '';
 	};
 	let delteFolder = (folderId: number) => {
 		Folders.update((folders: Folder[]) => {
